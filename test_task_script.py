@@ -6,6 +6,7 @@ from dateutil.relativedelta import relativedelta
 from re import search
 import os
 from flask import Flask, redirect
+from apscheduler.schedulers.blocking import BlockingScheduler
 
 
 TOKEN_V2 = os.environ.get("TOKEN_V2")
@@ -15,7 +16,10 @@ client = NotionClient(token_v2=TOKEN_V2)
 page = client.get_block(URL_OF_TEST)
 
 app = Flask(__name__)
+sched = BlockingScheduler()
 
+
+@sched.scheduled_job('cron', day_of_week='mon-fri', hour=17)
 @app.route('/')
 def getScript():
     # Забираем все задачи со статусом Done
