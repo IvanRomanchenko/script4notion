@@ -19,8 +19,8 @@ app = Flask(__name__)
 sched = BlockingScheduler()
 
 
-@sched.scheduled_job('cron', day_of_week='mon-fri', hour=17)
 @app.route('/')
+@sched.scheduled_job('cron', day_of_week='mon-fri', hour=15)  # Запуск скрипта в 17:00 по Киеву
 def getScript():
     # Забираем все задачи со статусом Done
     rows = [i for j in [child.collection.get_rows() for child in page.children if isinstance(child, CollectionViewBlock)] for i in j if i.status == 'DONE' and i.periodicity not in (['On demand'], [])]
@@ -130,4 +130,4 @@ def getScript():
 
 
 if __name__ == '__main__':
-    app.run()
+    sched.start()
