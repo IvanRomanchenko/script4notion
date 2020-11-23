@@ -19,7 +19,7 @@ page = client.get_block(URL_OF_TEST)
 app = Flask(__name__)
 
 @app.route('/')
-def getScript:
+def getScript():
     # Забираем все задачи со статусом Done
     rows = [i for j in [child.collection.get_rows() for child in page.children if isinstance(child, CollectionViewBlock)] for i in j if i.status == 'DONE' and i.periodicity not in (['On demand'], [])]
 
