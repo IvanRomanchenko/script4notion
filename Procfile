@@ -1,2 +1,2 @@
 web: gunicorn wsgi:app
-clock: python wsgi.py
+clock: python test_task_script.py
