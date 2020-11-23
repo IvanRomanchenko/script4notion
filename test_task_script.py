@@ -20,7 +20,7 @@ sched = BlockingScheduler()
 
 
 @app.route('/')
-@sched.scheduled_job('cron', day_of_week='mon-fri', hour=18)
+@sched.scheduled_job('cron', day_of_week='mon-fri', hour=18, minute=5)
 def getScript():
     # Забираем все задачи со статусом Done
     rows = [i for j in [child.collection.get_rows() for child in page.children if isinstance(child, CollectionViewBlock)] for i in j if i.status == 'DONE' and i.periodicity not in (['On demand'], [])]
@@ -130,5 +130,4 @@ def getScript():
 
 
 if __name__ == '__main__':
-    app.run()
     sched.start()
