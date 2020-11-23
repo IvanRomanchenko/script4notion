@@ -5,12 +5,10 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from re import search
 import os
-from flask import Flask
+from flask import Flask, redirect
 
 
-#TOKEN_V2 = "a101fe67612e5c9dbf8d4858f405122524ddb6325f62880192759a36b0d6aae18b5cb9bf4a39028b9cc95f8d9f359c7abd82f9751dbcc4510dc90f71824de9984a5fb58fafc59101442a29dfc06a"
 TOKEN_V2 = os.environ.get("TOKEN_V2")
-#URL_OF_TEST = "https://www.notion.so/Head-board-test-task1-f75be4b1e7c6456280c1ae8c30e0e616"
 URL_OF_TEST = os.environ.get("URL_OF_TEST")
 
 client = NotionClient(token_v2=TOKEN_V2)
@@ -124,7 +122,7 @@ def getScript():
             elif row.set_date.start == today:  # если set date = today меняем Status property = To Do
                 row.status = 'TO DO'
 
-    return 'ok', 200
+    return redirect("https://www.notion.so/Head-Board-Test-Task-1-f75be4b1e7c6456280c1ae8c30e0e616")
 
 
 if __name__ == '__main__':
