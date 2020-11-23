@@ -1,2 +1,4 @@
 notion
 python-dateutil
+Flask
+gunicorn
