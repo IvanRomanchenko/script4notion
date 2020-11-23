@@ -19,7 +19,7 @@ app = Flask(__name__)
 sched = BlockingScheduler()
 
 
-@sched.scheduled_job('cron', day_of_week='mon-fri', hour=17)
+@sched.scheduled_job('cron', day_of_week='mon-fri', hour=17, minute=18)
 @app.route('/')
 def getScript():
     # Забираем все задачи со статусом Done
