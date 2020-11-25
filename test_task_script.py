@@ -20,17 +20,17 @@ sched = BlockingScheduler()
 
 
 @app.route('/')
-@sched.scheduled_job('cron', day_of_week='mon-fri', hour=18, minute=5)
-def getScript():
-    # Забираем все задачи со статусом Done
+@sched.scheduled_job('cron', day_of_week='mon-fri', hour=15)  # We set the task execution schedule at 15:00 UTC (17:00 Kiev time)
+def script():
+    # Take all tasks with the status Done
     rows = [i for j in [child.collection.get_rows() for child in page.children if isinstance(child, CollectionViewBlock)] for i in j if i.status == 'DONE' and i.periodicity not in (['On demand'], [])]
 
-    # Определяем сегодняшнюю дату
+    # Determine today's date
     today = datetime.now().date()
 
 
     def set_due_date(periodicity: list) -> datetime.date:
-        """ Расчитывает дату для параметра <due_date> """
+        """ Calculates the date for a parameter <due_date> """
 
         periodicity = ''.join(periodicity)
 
@@ -83,7 +83,7 @@ def getScript():
         return due_date
 
 
-    # Расчитываем следующую дату на основе параметров в Periodicity property, ставим ее в due date
+    # Calculate the next date based on the parameters in the Periodicity property, set it to due date
     for row in rows:
         try:
             due_d = row.due_date.start
@@ -95,7 +95,7 @@ def getScript():
             if due_d in (None, today):
                 row.due_date = set_due_date(row.periodicity)
 
-    # Расчитываем дату, когда карточка должна быть перенесена в статус To Do.
+    # Calculate the date when the card should be transferred to the To Do status
     for row in rows:
         try:
             set_d = row.set_date.start
@@ -108,25 +108,25 @@ def getScript():
                 periodicity = ''.join(row.periodicity)
                 due_d = row.due_date.start
 
-                if search(r'Daily', periodicity):  # если Periodicity =  Daily, то set date = due date
+                if search(r'Daily', periodicity):  # if Periodicity =  Daily, then set date = due date
                     row.set_date = due_d
 
-                elif search(r'/w', periodicity):  # если Periodicity =  */w, то set date = due date - 1 day
+                elif search(r'/w', periodicity):  # if Periodicity =  */w, then set date = due date - 1 day
                     row.set_date = due_d - relativedelta(days=1)
 
-                elif search(r'/\dw', periodicity):  # если Periodicity =  */2w или */3w, то set date = due date - 3 day
+                elif search(r'/\dw', periodicity):  # if Periodicity =  */2w or */3w, then set date = due date - 3 day
                     row.set_date = due_d - relativedelta(days=3)
 
-                elif search(r'/m', periodicity):  # если Periodicity =  */m, то set date = due date - 1 week
+                elif search(r'/m', periodicity):  # if Periodicity =  */m, then set date = due date - 1 week
                     row.set_date = due_d - relativedelta(weeks=1)
 
-                elif search(r'/\dm', periodicity):  # если Periodicity =  */2m или */3m, то set date = due date - 2 week
+                elif search(r'/\dm', periodicity):  # if Periodicity =  */2m or */3m, then set date = due date - 2 week
                     row.set_date = due_d - relativedelta(weeks=2)
 
-            elif row.set_date.start == today:  # если set date = today меняем Status property = To Do
+            elif row.set_date.start == today:  # if set date = today, then Status property = To Do
                 row.status = 'TO DO'
 
-    return redirect("https://www.notion.so/Head-Board-Test-Task-1-f75be4b1e7c6456280c1ae8c30e0e616")
+    return redirect("https://www.notion.so/Test-task-figured-out-Ivan-Romanchenko-a59bf74fe26b41ff8731bf94a0af4f93")
 
 
 if __name__ == '__main__':
