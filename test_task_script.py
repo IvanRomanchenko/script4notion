@@ -49,8 +49,8 @@ def script():
 
             weekday = monday or tuesday or wednesday or thursday or friday
 
-            numb_of_times = int(times_in.group()[0])  # */N
-            numb_of = times_in.group().split('/')[1]  # N/*
+            numb_of_times = int(times_in.group()[0])
+            numb_of = times_in.group().split('/')[1]
 
             if numb_of_times > 1:
                 if numb_of[0].isdigit():
