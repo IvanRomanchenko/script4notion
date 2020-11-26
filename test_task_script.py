@@ -7,6 +7,7 @@ from re import search
 import os
 from flask import Flask, redirect
 from apscheduler.schedulers.blocking import BlockingScheduler
+from json import load, dump
 
 
 TOKEN_V2 = os.environ.get("TOKEN_V2")
@@ -19,14 +20,35 @@ app = Flask(__name__)
 sched = BlockingScheduler()
 
 
+@sched.scheduled_job('cron', hour=0)
+def _time_today():
+    """ Every day updates the current date """
+    with open('json.json', 'w') as f:
+        dump(str(datetime.now().date()), f)
+
+
+# @sched.scheduled_job('interval', minutes=10)  # 10 minutes = 1 day
+def time_today():
+    """ Allows you to "manage" time, "speeding up" the flow of days!
+        To use, you need to uncomment the decorator of this function """
+    with open('json.json') as f:
+        today = datetime.date(datetime.strptime(load(f), "%Y-%m-%d"))
+
+    with open('json.json', 'w') as f:
+        today += relativedelta(days=1)
+        dump(str(today), f)
+
+
 @app.route('/')
-@sched.scheduled_job('cron', day_of_week='mon-fri', hour=15)  # We set the task execution schedule at 15:00 UTC (17:00 Kiev time)
+@sched.scheduled_job('cron', day_of_week='mon-fri', hour=15)  # Set the task execution schedule at 15:00 UTC (17:00 Kiev time)
+# @sched.scheduled_job('interval', minutes=10)  # If you don't want to wait until 17:00 the next day, you can set your own interval
 def script():
     # Take all tasks with the status Done
     rows = [i for j in [child.collection.get_rows() for child in page.children if isinstance(child, CollectionViewBlock)] for i in j if i.status == 'DONE' and i.periodicity not in (['On demand'], [])]
 
     # Determine today's date
-    today = datetime.now().date()
+    with open('json.json') as f:
+        today = datetime.date(datetime.strptime(load(f), "%Y-%m-%d"))
 
 
     def set_due_date(periodicity: list) -> datetime.date:
