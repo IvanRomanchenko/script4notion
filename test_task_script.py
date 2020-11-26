@@ -27,7 +27,7 @@ def _time_today():
         dump(str(datetime.now().date()), f)
 
 
-# @sched.scheduled_job('interval', minutes=10)  # 10 minutes = 1 day
+@sched.scheduled_job('interval', minutes=10)  # 10 minutes = 1 day
 def time_today():
     """ Allows you to "manage" time, "speeding up" the flow of days!
         To use, you need to uncomment the decorator of this function """
@@ -40,8 +40,8 @@ def time_today():
 
 
 @app.route('/')
-@sched.scheduled_job('cron', day_of_week='mon-fri', hour=15)  # Set the task execution schedule at 15:00 UTC (17:00 Kiev time)
-# @sched.scheduled_job('interval', minutes=10)  # If you don't want to wait until 17:00 the next day, you can set your own interval
+# @sched.scheduled_job('cron', day_of_week='mon-fri', hour=15)  # Set the task execution schedule at 15:00 UTC (17:00 Kiev time)
+@sched.scheduled_job('interval', minutes=10)  # If you don't want to wait until 17:00 the next day, you can set your own interval
 def script():
     # Take all tasks with the status Done
     rows = [i for j in [child.collection.get_rows() for child in page.children if isinstance(child, CollectionViewBlock)] for i in j if i.status == 'DONE' and i.periodicity not in (['On demand'], [])]
